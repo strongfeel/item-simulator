@@ -15,8 +15,9 @@ datasource db {
 
 model Users {
   userId Int @id @default(autoincrement()) @map("userId")
-  email String @unique @map("email")
+  id String @unique @map("id")
   password String @map("password")
+  confirmPassword String @map("confirmPassword")
   createdAt DateTime @default(now()) @map("updatedAt")
 
   userInfos UserInfos?
