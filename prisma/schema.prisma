@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  userId Int @id @default(autoincrement()) @map("userId")
+  email String @unique @map("email")
+  password String @map("password")
+  createdAt DateTime @default(now()) @map("updatedAt")
+
+  userInfos UserInfos?
+  characters Characters[]
+  characterInventory CharacterInventory[]
+  characterItems CharacterItems[]
+
+  @@map("Users")
+}
+
+model UserInfos {
+  userInfoId Int @id @default(autoincrement()) @map("userInfoId")
+  userId Int @unique @map("userId")
+  userName String @map("userName")
+  createdAt DateTime @default(now()) @map("createdAt")
+
+  users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("UserInfos")
+}
+
+model Items {
+  itemId Int @id @default(autoincrement()) @map("itemId")
+  itemName String @unique @map("itemName")
+  itemPrice Int @map("itemPrice")
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
+
+  itemInfos ItemInfos?
+  characters Characters[]
+  characterInventory CharacterInventory[]
+  characterItems CharacterItems[]
+
+  @@map("Items")
+}
+
+model ItemInfos {
+  itemInfoId Int @id @default(autoincrement()) @map("itemInfoId")
+  itemId Int @unique @map("itemId")
+  itemHealth Int @map("itemHealth")
+  itemPower Int @map("itemPower")
+
+  items Items @relation(fields: [itemId], references: [itemId], onDelete: Cascade)
+
+  @@map("ItemInfos")
+}
+
+model Characters {
+  characterId Int @id @default(autoincrement()) @map("characterId")
+  userId Int @unique @map("userId")
+  itemId Int @unique @map("itemId")
+  characterName String @unique @map("characterName")
+  health Int @map("health")
+  power Int @map("power")
+  money Int @map("money")
+
+  users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  items Items @relation(fields: [itemId], references: [itemId], onDelete: Cascade)
+  characterInventory CharacterInventory[]
+  characterItems CharacterItems[]
+
+  @@map("Characters")
+}
+
+model CharacterInventory {
+  inventoryId Int @id @default(autoincrement()) @map("inventoryId")
+  userId Int @unique @map("userId")
+  characterId Int @unique @map("characterId")
+  itemId Int @unique @map("itemId")
+  itemCount Int @map("itemCount")
+
+  users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  items Items @relation(fields: [itemId], references: [itemId], onDelete: Cascade)
+  characters Characters @relation(fields: [characterId], references: [characterId], onDelete: Cascade)
+  characterItems CharacterItems[]
+
+  @@map("CharacterInventory")
+}
+
+model CharacterItems {
+  characterItemId Int @id @default(autoincrement()) @map("characterItemId")
+  userId Int @unique @map("userId")
+  characterId Int @unique @map("characterId")
+  itemId Int @unique @map("itemId")
+  inventoryId Int @unique @map("inventoryId")
+
+  users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  items Items @relation(fields: [itemId], references: [itemId], onDelete: Cascade)
+  characters Characters @relation(fields: [characterId], references: [characterId], onDelete: Cascade)
+  characterInventory CharacterInventory @relation(fields: [inventoryId], references: [inventoryId], onDelete: Cascade)
+
+
+  @@map("CharacterItems")
+}
