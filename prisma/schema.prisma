@@ -18,7 +18,8 @@ model Users {
   id String @unique @map("id")
   password String @map("password")
   confirmPassword String? @map("confirmPassword")
-  createdAt DateTime @default(now()) @map("updatedAt")
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
 
   userInfos UserInfos?
   characters Characters[]
@@ -33,6 +34,7 @@ model UserInfos {
   userId Int @unique @map("userId")
   userName String @map("userName")
   createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
 
   users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
@@ -58,6 +60,8 @@ model ItemInfos {
   itemId Int @unique @map("itemId")
   itemHealth Int @map("itemHealth")
   itemPower Int @map("itemPower")
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
 
   items Items @relation(fields: [itemId], references: [itemId], onDelete: Cascade)
 
@@ -66,11 +70,13 @@ model ItemInfos {
 
 model Characters {
   characterId Int @id @default(autoincrement()) @map("characterId")
-  userId Int @unique @map("userId")
+  userId Int @map("userId")
   characterName String @unique @map("characterName")
   health Int @map("health")
   power Int @map("power")
   money Int @map("money")
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
 
   users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
   characterInventory CharacterInventory[]
@@ -81,10 +87,12 @@ model Characters {
 
 model CharacterInventory {
   inventoryId Int @id @default(autoincrement()) @map("inventoryId")
-  userId Int @unique @map("userId")
-  characterId Int @unique @map("characterId")
-  itemId Int @unique @map("itemId")
+  userId Int @map("userId")
+  characterId Int @map("characterId")
+  itemId Int @map("itemId")
   itemCount Int @map("itemCount")
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
 
   users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
   items Items @relation(fields: [itemId], references: [itemId], onDelete: Cascade)
@@ -96,10 +104,12 @@ model CharacterInventory {
 
 model CharacterItems {
   characterItemId Int @id @default(autoincrement()) @map("characterItemId")
-  userId Int @unique @map("userId")
-  characterId Int @unique @map("characterId")
-  itemId Int @unique @map("itemId")
-  inventoryId Int @unique @map("inventoryId")
+  userId Int @map("userId")
+  characterId Int @map("characterId")
+  itemId Int @map("itemId")
+  inventoryId Int @map("inventoryId")
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
 
   users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
   items Items @relation(fields: [itemId], references: [itemId], onDelete: Cascade)
