@@ -11,19 +11,20 @@ router.post("/sign-up", async (req, res, next) => {
   try {
     const { id, password, confirmPassword, userName } = req.body;
 
+    // 유저 아이디 중복 조사
     const isExistUser = await prisma.users.findFirst({
       where: { id },
     });
 
     if (isExistUser) {
-      return res.status(404).json({ message: "이미 존재하는 아이디 입니다." });
+      return res.status(405).json({ message: "이미 존재하는 아이디 입니다." });
     }
 
     // 아이디 생성시 영어 소문자 + 숫자조합 구성
     const regex = /^[a-z|0-9]+$/;
 
     if (!regex.test(id)) {
-      return res.status(404).json({
+      return res.status(406).json({
         message: "영어 소문자와 숫자조합으로 아이디를 작성하여 주세요.",
       });
     }
@@ -85,7 +86,7 @@ router.post("/sign-in", async (req, res, next) => {
     return res.status(401).json({ message: "존재하지 않은 아이디입니다." });
   // 비밀번호 확인 작업
   if (!(await bcrypt.compare(password, user.password)))
-    return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
+    return res.status(402).json({ message: "비밀번호가 일치하지 않습니다." });
 
   // 유저아이디 정보를 할당하고 custom-secret-key 방식으로 사용
   const token = jwt.sign({ userId: user.userId }, "custom-secret-key");

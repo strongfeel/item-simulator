@@ -4,6 +4,7 @@ import LogMiddleware from "./middlewares/log.middleware.js";
 import errorHandlingMiddleware from "./middlewares/error-handling.middleware.js";
 import UsersRouter from "./routes/users.routers.js";
 import CharactersRouter from "./routes/characters.routers.js";
+import ItemsRouter from "./routes/items.routers.js";
 
 const app = express();
 const PORT = 3018;
@@ -12,7 +13,7 @@ app.use(LogMiddleware);
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api", [UsersRouter, CharactersRouter]);
+app.use("/api", [UsersRouter, CharactersRouter, ItemsRouter]);
 app.use(errorHandlingMiddleware);
 
 app.listen(PORT, () => {
