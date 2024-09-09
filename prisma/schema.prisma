@@ -17,7 +17,7 @@ model Users {
   userId Int @id @default(autoincrement()) @map("userId")
   id String @unique @map("id")
   password String @map("password")
-  confirmPassword String @map("confirmPassword")
+  confirmPassword String? @map("confirmPassword")
   createdAt DateTime @default(now()) @map("updatedAt")
 
   userInfos UserInfos?
@@ -47,7 +47,6 @@ model Items {
   updatedAt DateTime @updatedAt @map("updatedAt")
 
   itemInfos ItemInfos?
-  characters Characters[]
   characterInventory CharacterInventory[]
   characterItems CharacterItems[]
 
@@ -68,14 +67,12 @@ model ItemInfos {
 model Characters {
   characterId Int @id @default(autoincrement()) @map("characterId")
   userId Int @unique @map("userId")
-  itemId Int @unique @map("itemId")
   characterName String @unique @map("characterName")
   health Int @map("health")
   power Int @map("power")
   money Int @map("money")
 
   users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  items Items @relation(fields: [itemId], references: [itemId], onDelete: Cascade)
   characterInventory CharacterInventory[]
   characterItems CharacterItems[]
 
