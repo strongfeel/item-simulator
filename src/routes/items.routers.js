@@ -62,7 +62,7 @@ router.get("/items", async (req, res, next) => {
       itemPrice: true,
     },
     orderBy: {
-      createdAt: "desc", // 게시글을 최신순으로 정렬
+      createdAt: "desc", // 아이템을 최신순으로 정렬
     },
   });
 
@@ -94,6 +94,73 @@ router.get("/items/:itemId", async (req, res, next) => {
     return res.status(404).json({ message: "생성된 아이템이 없습니다." });
 
   return res.status(200).json({ data: item });
+});
+
+// 아이템 목록 조회 API 구현
+router.get("/items", async (req, res, next) => {
+  const items = await prisma.items.findMany({
+    select: {
+      itemId: true,
+      itemName: true,
+      itemPrice: true,
+    },
+    orderBy: {
+      createdAt: "desc", // 게시글을 최신순으로 정렬
+    },
+  });
+
+  if (!items)
+    return res.status(404).json({ message: "생성된 아이템이 없습니다." });
+
+  return res.status(200).json({ data: items });
+});
+
+// 아이템 업데이트 API 구현
+router.patch("/items/:itemId", async (req, res, next) => {
+  try {
+    const { itemName, itemHealth, itemPower } = req.body;
+    const { itemId } = req.params;
+
+    const itemInfos = await prisma.items.findFirst({
+      where: { itemId: +itemId },
+    });
+
+    if (!itemInfos) {
+      return res.status(404).json({ message: "생성된 아이템이 없습니다." });
+    }
+
+    const [item, itemInfo] = await prisma.$transaction(
+      async (tx) => {
+        const item = await tx.items.update({
+          data: {
+            itemName,
+          },
+          where: { itemId: itemInfos.itemId },
+        });
+
+        const itemInfo = await tx.itemInfos.update({
+          data: {
+            itemId: item.itemId,
+            itemHealth,
+            itemPower,
+          },
+          where: {
+            itemId: itemInfos.itemId,
+          },
+        });
+
+        return [item, itemInfo];
+      },
+      {
+        // 격리수준 설정
+        isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
+      }
+    );
+
+    return res.status(201).json({ message: "아이템이 업데이트 되었습니다." });
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default router;
