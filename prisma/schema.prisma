@@ -58,8 +58,8 @@ model Items {
 model ItemInfos {
   itemInfoId Int @id @default(autoincrement()) @map("itemInfoId")
   itemId Int @unique @map("itemId")
-  itemHealth Int @map("itemHealth")
-  itemPower Int @map("itemPower")
+  itemHealth Int? @map("itemHealth")
+  itemPower Int? @map("itemPower")
   createdAt DateTime @default(now()) @map("createdAt")
   updatedAt DateTime @updatedAt @map("updatedAt")
 

@@ -121,11 +121,11 @@ router.patch("/items/:itemId", async (req, res, next) => {
     const { itemName, itemHealth, itemPower } = req.body;
     const { itemId } = req.params;
 
-    const itemInfos = await prisma.items.findFirst({
+    const itemExist = await prisma.items.findFirst({
       where: { itemId: +itemId },
     });
 
-    if (!itemInfos) {
+    if (!itemExist) {
       return res.status(404).json({ message: "생성된 아이템이 없습니다." });
     }
 
@@ -135,21 +135,38 @@ router.patch("/items/:itemId", async (req, res, next) => {
           data: {
             itemName,
           },
-          where: { itemId: itemInfos.itemId },
+          where: { itemId: itemExist.itemId },
         });
 
-        const itemInfo = await tx.itemInfos.update({
-          data: {
-            itemId: item.itemId,
-            itemHealth,
-            itemPower,
-          },
-          where: {
-            itemId: itemInfos.itemId,
-          },
-        });
+        if (!itemHealth) {
+          const itemInfo = await tx.itemInfos.update({
+            data: {
+              itemId: item.itemId,
+              itemHealth: 0,
+              itemPower,
+            },
+            where: {
+              itemId: itemExist.itemId,
+            },
+          });
+          return [itemInfo];
+        }
 
-        return [item, itemInfo];
+        if (!itemPower) {
+          const itemInfo = await tx.itemInfos.update({
+            data: {
+              itemId: item.itemId,
+              itemHealth,
+              itemPower: 0,
+            },
+            where: {
+              itemId: itemExist.itemId,
+            },
+          });
+          return [itemInfo];
+        }
+
+        return [item];
       },
       {
         // 격리수준 설정
