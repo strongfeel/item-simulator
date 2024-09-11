@@ -1,6 +1,7 @@
 ## ERD
 
-![alt text](<스크린샷 2024-09-11 195757.png>)
+![image](https://github.com/user-attachments/assets/a8be38f4-4a43-4b35-bd5d-c950cdba8f29)
+
 
 ## 질문과 답변
 
