@@ -57,7 +57,7 @@ router.delete(
         },
       });
 
-      return res.status(200).json({ data: deleteCharacter });
+      return res.status(202).json({ data: deleteCharacter });
     } catch (err) {
       next(err);
     }
