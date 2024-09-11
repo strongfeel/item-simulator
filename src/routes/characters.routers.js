@@ -64,28 +64,34 @@ router.delete(
   }
 );
 
-//캐릭터 상세 조회 API(로그인 안했을 때)
-router.get("/characters/:characterId", async (req, res, next) => {
-  try {
-    const { characterId } = req.params;
+//캐릭터 상세 조회 API
+router.get(
+  "/characters/:characterId",
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { characterId } = req.params;
+      const { userId } = req.user;
 
-    const character = await prisma.characters.findFirst({
-      where: {
-        characterId: +characterId,
-      },
-      select: {
-        characterName: true,
-        health: true,
-        power: true,
-      },
-    });
+      const character = await prisma.characters.findFirst({
+        where: {
+          characterId: +characterId,
+        },
+        select: {
+          characterName: true,
+          health: true,
+          power: true,
+          money: true,
+        },
+      });
 
-    if (!character)
-      return res.status(404).json({ message: "캐릭터가 존재하지 않습니다." });
-    return res.status(200).json({ data: character });
-  } catch (err) {
-    next(err);
+      if (!character)
+        return res.status(404).json({ message: "캐릭터가 존재하지 않습니다." });
+      return res.status(200).json({ data: character });
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 export default router;

@@ -3,6 +3,7 @@ import { prisma } from "../utils/prisma/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Prisma } from "@prisma/client";
+import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -94,25 +95,6 @@ router.get("/items/:itemId", async (req, res, next) => {
     return res.status(404).json({ message: "생성된 아이템이 없습니다." });
 
   return res.status(200).json({ data: item });
-});
-
-// 아이템 목록 조회 API 구현
-router.get("/items", async (req, res, next) => {
-  const items = await prisma.items.findMany({
-    select: {
-      itemId: true,
-      itemName: true,
-      itemPrice: true,
-    },
-    orderBy: {
-      createdAt: "desc", // 게시글을 최신순으로 정렬
-    },
-  });
-
-  if (!items)
-    return res.status(404).json({ message: "생성된 아이템이 없습니다." });
-
-  return res.status(200).json({ data: items });
 });
 
 // 아이템 업데이트 API 구현
