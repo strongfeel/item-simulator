@@ -1,6 +1,7 @@
 ## ERD
 
-![image](https://github.com/user-attachments/assets/a8be38f4-4a43-4b35-bd5d-c950cdba8f29)
+![image](https://github.com/user-attachments/assets/635513bc-dc04-43bf-9e66-1a0152ce64af)
+
 
 
 ## 질문과 답변
