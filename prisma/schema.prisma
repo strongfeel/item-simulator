@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -23,8 +17,6 @@ model Users {
 
   userInfos UserInfos?
   characters Characters[]
-  characterInventory CharacterInventory[]
-  characterItems CharacterItems[]
 
   @@map("Users")
 }
@@ -87,34 +79,28 @@ model Characters {
 
 model CharacterInventory {
   inventoryId Int @id @default(autoincrement()) @map("inventoryId")
-  userId Int @map("userId")
   characterId Int @map("characterId")
   itemId Int @map("itemId")
   itemCount Int @map("itemCount")
   createdAt DateTime @default(now()) @map("createdAt")
   updatedAt DateTime @updatedAt @map("updatedAt")
 
-  users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
   items Items @relation(fields: [itemId], references: [itemId], onDelete: Cascade)
   characters Characters @relation(fields: [characterId], references: [characterId], onDelete: Cascade)
-  characterItems CharacterItems[]
 
   @@map("CharacterInventory")
 }
 
 model CharacterItems {
   characterItemId Int @id @default(autoincrement()) @map("characterItemId")
-  userId Int @map("userId")
   characterId Int @map("characterId")
   itemId Int @map("itemId")
-  inventoryId Int @map("inventoryId")
   createdAt DateTime @default(now()) @map("createdAt")
   updatedAt DateTime @updatedAt @map("updatedAt")
 
-  users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
   items Items @relation(fields: [itemId], references: [itemId], onDelete: Cascade)
   characters Characters @relation(fields: [characterId], references: [characterId], onDelete: Cascade)
-  characterInventory CharacterInventory @relation(fields: [inventoryId], references: [inventoryId], onDelete: Cascade)
+
 
 
   @@map("CharacterItems")

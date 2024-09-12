@@ -76,25 +76,29 @@ router.post("/sign-up", async (req, res, next) => {
 
 // 로그인 API 구현
 router.post("/sign-in", async (req, res, next) => {
-  const { id, password } = req.body;
-  const user = await prisma.users.findFirst({
-    where: {
-      id,
-    },
-  });
-  if (!user)
-    return res.status(401).json({ message: "존재하지 않은 아이디입니다." });
-  // 비밀번호 확인 작업
-  if (!(await bcrypt.compare(password, user.password)))
-    return res.status(402).json({ message: "비밀번호가 일치하지 않습니다." });
+  try {
+    const { id, password } = req.body;
+    const user = await prisma.users.findFirst({
+      where: {
+        id,
+      },
+    });
+    if (!user)
+      return res.status(401).json({ message: "존재하지 않은 아이디입니다." });
+    // 비밀번호 확인 작업
+    if (!(await bcrypt.compare(password, user.password)))
+      return res.status(402).json({ message: "비밀번호가 일치하지 않습니다." });
 
-  // 유저아이디 정보를 할당하고 custom-secret-key 방식으로 사용
-  const token = jwt.sign({ userId: user.userId }, "custom-secret-key");
+    // 유저아이디 정보를 할당하고 custom-secret-key 방식으로 사용
+    const token = jwt.sign({ userId: user.userId }, "custom-secret-key");
 
-  // 쿠키할당
-  res.cookie("authorization", `Bearer ${token}`);
+    // 쿠키할당
+    res.cookie("authorization", `Bearer ${token}`);
 
-  return res.status(200).json({ message: "로그인에 성공하였습니다." });
+    return res.status(200).json({ message: "로그인에 성공하였습니다." });
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default router;
