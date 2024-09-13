@@ -11,26 +11,16 @@ model Users {
   userId Int @id @default(autoincrement()) @map("userId")
   id String @unique @map("id")
   password String @map("password")
+  money Int @map("money")
+  gamePoint Int @map("gamePoint")
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
 
-  userInfos UserInfos?
+  gamerecords GameRecords?
+  playerInventories PlayerInventories?
+
 
   @@map("Users")
-}
-
-model UserInfos {
-    userInfoId Int @id @default(autoincrement()) @map("userInfoId")
-    userId Int @unique @map("userId")
-    money Int @map("money")
-    gamePoint Int @map("gamePoint")
-    createdAt DateTime @default(now()) @map("createdAt")
-    updatedAt DateTime @updatedAt @map("updatedAt")
-
-    users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
-    playerInventories PlayerInventories[]
-    rosters Rosters[]
-    gamerecords GameRecords[]
-
-    @@map("UserInfos")
 }
 
 model Players {
@@ -46,42 +36,41 @@ model Players {
     updatedAt DateTime @updatedAt @map("updatedAt")
 
     playerInventories PlayerInventories[]
-    rosters Rosters[]
 
     @@map("Player")
 }
 
 model PlayerInventories {
     inventoryId Int @id @default(autoincrement()) @map("inventoryId")
-    userInfoId Int @unique @map("userInfoId")
+    userId Int @unique @map("userId")
     playerId Int @unique @map("playerId")
 
-    userInfos UserInfos @relation(fields: [userInfoId], references: [userInfoId], onDelete: Cascade)
     players Players @relation(fields: [playerId], references: [playerId], onDelete: Cascade)
+    users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
+    rosters Rosters?
 
     @@map("PlayerInventories")
 }
 
 model Rosters {
     rosterId Int @id @default(autoincrement()) @map("rosterId")
-    userInfoId Int @unique @map("userInfoId")
-    playerId Int @unique @map("playerId")
+    inventoryId Int @unique @map("inventoryId")
 
-    userInfos UserInfos @relation(fields: [userInfoId], references: [userInfoId], onDelete: Cascade)
-    players Players @relation(fields: [playerId], references: [playerId], onDelete: Cascade)
+    playerInventories PlayerInventories @relation(fields: [inventoryId], references: [inventoryId], onDelete: Cascade)
 
     @@map("Rosters")
 }
 
 model GameRecords {
     gameRecordId Int @id @default(autoincrement()) @map("gameRecordId")
-    userInfoId Int @unique @map("userInfoId")
+    userId Int @unique @map("userId")
     win Int @map("win")
     lose Int @map("lose")
     draw Int @map("draw")
     createdAt DateTime @default(now()) @map("createdAt")
 
-    userInfos UserInfos @relation(fields: [userInfoId], references: [userInfoId], onDelete: Cascade)
+    users Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
     @@map("GameRecords")
 }
+
