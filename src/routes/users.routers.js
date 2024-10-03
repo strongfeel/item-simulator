@@ -2,7 +2,6 @@ import express from "express";
 import { prisma } from "../utils/prisma/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Prisma } from "@prisma/client";
 
 const router = express.Router();
 
@@ -44,30 +43,13 @@ router.post("/sign-up", async (req, res, next) => {
     // 비밀번호 암호화 처리
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const [user, userinfo] = await prisma.$transaction(
-      async (tx) => {
-        const user = await tx.users.create({
-          data: {
-            id,
-            password: hashedPassword,
-            confirmPassword: null,
-          },
-        });
-
-        const userinfo = await tx.userInfos.create({
-          data: {
-            userId: user.userId,
-            userName,
-          },
-        });
-
-        return [user, userinfo];
+    await prisma.users.create({
+      data: {
+        id,
+        password: hashedPassword,
+        userName: userName,
       },
-      {
-        // 격리수준 설정
-        isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
-      }
-    );
+    });
     return res.status(201).json({ message: "회원가입이 완료되었습니다!" });
   } catch (err) {
     next(err);

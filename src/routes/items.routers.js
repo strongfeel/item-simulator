@@ -1,7 +1,5 @@
 import express from "express";
 import { prisma } from "../utils/prisma/index.js";
-import { Prisma } from "@prisma/client";
-import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -21,30 +19,14 @@ router.post("/items", async (req, res, next) => {
         .json({ message: "이미 존재하는 아이템 이름 입니다." });
     }
 
-    const [item, itemInfo] = await prisma.$transaction(
-      async (tx) => {
-        const item = await tx.items.create({
-          data: {
-            itemName,
-            itemPrice,
-          },
-        });
-
-        const itemInfo = await tx.itemInfos.create({
-          data: {
-            itemId: item.itemId,
-            itemHealth,
-            itemPower,
-          },
-        });
-
-        return [item, itemInfo];
+    await prisma.items.create({
+      data: {
+        itemName: itemName,
+        itemPrice: itemPrice,
+        itemHealth: itemHealth,
+        itemPower: itemPower,
       },
-      {
-        // 격리수준 설정
-        isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
-      }
-    );
+    });
 
     return res.status(201).json({ message: "아이템이 생성 되었습니다." });
   } catch (err) {
@@ -72,20 +54,12 @@ router.get("/items", async (req, res, next) => {
 });
 
 //아이템 상세 조회 API 구현
-router.get("/items/:itemId", async (req, res, next) => {
-  const { itemId } = req.params;
+router.get("/itemDetail", async (req, res, next) => {
+  const { itemId } = req.body;
 
-  const item = await prisma.items.findFirst({
+  const item = await prisma.items.findUnique({
     where: {
       itemId: +itemId,
-    },
-    select: {
-      itemId: true,
-      itemName: true,
-      itemPrice: true,
-      itemInfos: {
-        select: { itemHealth: true, itemPower: true },
-      },
     },
   });
 
@@ -96,10 +70,9 @@ router.get("/items/:itemId", async (req, res, next) => {
 });
 
 // 아이템 업데이트 API 구현
-router.put("/items/:itemId", async (req, res, next) => {
+router.put("/items", async (req, res, next) => {
   try {
-    const { itemName, itemHealth, itemPower } = req.body;
-    const { itemId } = req.params;
+    const { itemId, itemName, itemHealth, itemPower, itemPrice } = req.body;
 
     const itemExist = await prisma.items.findFirst({
       where: { itemId: +itemId },
@@ -113,23 +86,15 @@ router.put("/items/:itemId", async (req, res, next) => {
       where: { itemId: +itemId },
       data: {
         itemName: itemName,
-      },
-    });
-
-    const updateItemInfo = await prisma.itemInfos.update({
-      where: {
-        itemId: +itemId,
-      },
-      data: {
         itemHealth: itemHealth,
         itemPower: itemPower,
+        itemPrice: itemPrice,
       },
     });
 
     return res.status(200).json({
       message: "아이템이 정상적으로 업데이트 됬습니다.",
       updateItem,
-      updateItemInfo,
     });
   } catch (err) {
     console.log("에이템 수정중 오류 발생:", err);
