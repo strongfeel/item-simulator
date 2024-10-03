@@ -90,7 +90,7 @@ router.post("/sign-in", async (req, res, next) => {
       return res.status(402).json({ message: "비밀번호가 일치하지 않습니다." });
 
     // 유저아이디 정보를 할당하고 custom-secret-key 방식으로 사용
-    const token = jwt.sign({ userId: user.userId }, "custom-secret-key");
+    const token = jwt.sign({ userId: user.userId }, process.env.SECRET_KEY);
 
     // 쿠키할당
     res.cookie("authorization", `Bearer ${token}`);

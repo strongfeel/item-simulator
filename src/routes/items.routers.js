@@ -1,7 +1,5 @@
 import express from "express";
 import { prisma } from "../utils/prisma/index.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { Prisma } from "@prisma/client";
 import authMiddleware from "../middlewares/auth.middleware.js";
 
@@ -98,7 +96,7 @@ router.get("/items/:itemId", async (req, res, next) => {
 });
 
 // 아이템 업데이트 API 구현
-router.patch("/items/:itemId", async (req, res, next) => {
+router.put("/items/:itemId", async (req, res, next) => {
   try {
     const { itemName, itemHealth, itemPower } = req.body;
     const { itemId } = req.params;
@@ -111,53 +109,30 @@ router.patch("/items/:itemId", async (req, res, next) => {
       return res.status(404).json({ message: "생성된 아이템이 없습니다." });
     }
 
-    const [item, itemInfo] = await prisma.$transaction(
-      async (tx) => {
-        const item = await tx.items.update({
-          data: {
-            itemName,
-          },
-          where: { itemId: itemExist.itemId },
-        });
-
-        if (!itemHealth) {
-          const itemInfo = await tx.itemInfos.update({
-            data: {
-              itemId: item.itemId,
-              itemHealth: 0,
-              itemPower,
-            },
-            where: {
-              itemId: itemExist.itemId,
-            },
-          });
-          return [itemInfo];
-        }
-
-        if (!itemPower) {
-          const itemInfo = await tx.itemInfos.update({
-            data: {
-              itemId: item.itemId,
-              itemHealth,
-              itemPower: 0,
-            },
-            where: {
-              itemId: itemExist.itemId,
-            },
-          });
-          return [itemInfo];
-        }
-
-        return [item];
+    const updateItem = await prisma.items.update({
+      where: { itemId: +itemId },
+      data: {
+        itemName: itemName,
       },
-      {
-        // 격리수준 설정
-        isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
-      }
-    );
+    });
 
-    return res.status(201).json({ message: "아이템이 업데이트 되었습니다." });
+    const updateItemInfo = await prisma.itemInfos.update({
+      where: {
+        itemId: +itemId,
+      },
+      data: {
+        itemHealth: itemHealth,
+        itemPower: itemPower,
+      },
+    });
+
+    return res.status(200).json({
+      message: "아이템이 정상적으로 업데이트 됬습니다.",
+      updateItem,
+      updateItemInfo,
+    });
   } catch (err) {
+    console.log("에이템 수정중 오류 발생:", err);
     next(err);
   }
 });
