@@ -1,10 +1,30 @@
 import express from "express";
 import { prisma } from "../utils/prisma/index.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
+import { CharactersController } from "../controller/characters.controller.js";
+import { CharactersService } from "../services/characters.service.js";
+import { CharactersRepository } from "../repositories/characters.repository.js";
 
 const router = express.Router();
 
+const charactersRepository = new CharactersRepository(prisma);
+const charactersService = new CharactersService(charactersRepository);
+const charactersController = new CharactersController(charactersService);
+
 // 캐릭터 생성 API 구현
+router.post(
+  "/characters",
+  authMiddleware,
+  charactersController.createCharacter
+);
+
+// 캐릭터 삭제 API 구현
+router.delete(
+  "/characters",
+  authMiddleware,
+  charactersController.deleteCharacter
+);
+
 router.post("/characters", authMiddleware, async (req, res, next) => {
   try {
     const { userId } = req.user;
@@ -29,12 +49,10 @@ router.post("/characters", authMiddleware, async (req, res, next) => {
       },
     });
 
-    return res
-      .status(201)
-      .json({
-        message: "캐릭터 생성을 완료 했습니다.",
-        characterId: character.characterId,
-      });
+    return res.status(201).json({
+      message: "캐릭터 생성을 완료 했습니다.",
+      characterId: character.characterId,
+    });
   } catch (err) {
     next(err);
   }
