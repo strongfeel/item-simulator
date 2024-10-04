@@ -45,7 +45,7 @@ export class CharactersService {
     await this.charactersRepository.deleteCharacter(userId, characterId);
   };
 
-  getCharacter = async (characterId) => {
+  getCharacter = async (characterId, userId) => {
     const character = await this.charactersRepository.findCharacterData(
       characterId
     );

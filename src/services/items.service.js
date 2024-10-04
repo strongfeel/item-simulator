@@ -32,15 +32,15 @@ export class ItemsService {
       throw new Error("생성된 아이템이 없습니다.");
     }
 
-    return getItems.map((item) => {
-      return {
-        itemId: item.itemId,
-        itemName: item.itemName,
-        itemPrice: item.itemPrice,
-      };
-    });
+    // return getItems.map((item) => {
+    //   return {
+    //     itemId: item.itemId,
+    //     itemName: item.itemName,
+    //     itemPrice: item.itemPrice,
+    //   };
+    // });
 
-    //return getItems;
+    return getItems;
   };
 
   getItem = async (itemId) => {
