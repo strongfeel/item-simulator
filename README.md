@@ -2,7 +2,8 @@
 
 ## ERD
 
-![image](https://github.com/user-attachments/assets/635513bc-dc04-43bf-9e66-1a0152ce64af)
+![스크린샷 2024-10-03 194322](https://github.com/user-attachments/assets/01ed772c-d4c3-40b8-895e-0182fde04abc)
+
 
 ## 질문과 답변
 
